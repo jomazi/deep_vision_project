@@ -10,10 +10,12 @@ data/*
 
 # Python specific
 **/__pycache__/
+src/.ipynb_checkpoints
 
 # Ignore Mac DS_Store files
 .DS_Store
 
 # ignore dropbox specific files
 .dropbox
-Icon
+Icon[
+]
