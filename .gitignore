@@ -1,0 +1,19 @@
+# ignore Pycharm files
+.idea/
+
+# ignore virtualenv files
+venv/
+
+# do not upload data, but keep folder
+data/*
+!data/.gitkeep
+
+# Python specific
+**/__pycache__/
+
+# Ignore Mac DS_Store files
+.DS_Store
+
+# ignore dropbox specific files
+.dropbox
+Icon
