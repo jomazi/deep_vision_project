@@ -33,6 +33,14 @@ pip install -r requirements.txt
 python ./src/download_data.py 
 ```
 
+- Jupyter Lab
+
+```
+jupyter nbextensions_configurator enable
+jupyter labextension install @jupyter-widgets/jupyterlab-manager
+```
+Note: [Node.js](https://nodejs.org/en/) (version 10.16.0 LTS is used here) has to be installed for that!
+
 ### Data
 
 [LLD - Large Logo Dataset](https://data.vision.ee.ethz.ch/sagea/lld/#paper) published by
