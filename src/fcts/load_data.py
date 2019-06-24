@@ -4,11 +4,13 @@ from glob import glob
 import _pickle
 
 
-def load_data(dir='../../data/'):
-    '''
+def load_data(dir='../../data/', split=0.7, part='train'):
+    """
     :param dir: relative path to directory the data is stored
-    :return: data as numpy array
-    '''
+    :param split: partial of training data to split data into train and test set; float
+    :param part: which part of data to retutn either train or test set; string
+    :return: data as numpy array, train and test set
+    """
 
     # paths to data
     current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -35,5 +37,15 @@ def load_data(dir='../../data/'):
             with open(file, 'rb') as f:
                 data_add = _pickle.load(f, encoding='latin1')
             data = np.concatenate((data, data_add))
-
-        return data
+            
+        # shuffle
+        np.random.shuffle(data)
+        
+        # split data in train and test
+        index_split = int(len(data) * split)
+        
+        # return requested part
+        if part == 'train':
+            return data[:index_split]
+        else:
+            return data[index_split:]
