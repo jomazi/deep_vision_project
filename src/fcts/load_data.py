@@ -4,11 +4,13 @@ from glob import glob
 import _pickle
 
 
-def load_data(dir='../../data/', split=0.7, part='train'):
+def load_data(dir='../../data/', split=0.7, part='train', batchsize=128, subset=False):
     """
     :param dir: relative path to directory the data is stored
     :param split: partial of training data to split data into train and test set; float
     :param part: which part of data to retutn either train or test set; string
+    :param batchsize: length of data has to be multiple of batchsize; int
+    :param subset: only use subset of data; bool
     :return: data as numpy array, train and test set
     """
 
@@ -40,12 +42,22 @@ def load_data(dir='../../data/', split=0.7, part='train'):
             
         # shuffle
         np.random.shuffle(data)
+
+        # use subset if requested
+        if subset:
+            data = data[:(batchsize*100)]
         
         # split data in train and test
         index_split = int(len(data) * split)
         
         # return requested part
         if part == 'train':
+            # make last batch have same batch size
+            mod = index_split % batchsize
+            index_split = index_split - mod
             return data[:index_split]
         else:
+            # make last batch have same batch size
+            mod = (len(data)-index_split) % batchsize
+            index_split = index_split + mod
             return data[index_split:]

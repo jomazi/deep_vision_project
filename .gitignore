@@ -7,9 +7,17 @@ venv/
 # ignore info folder 
 info/
 
-# do not upload data, but keep folder
-data/*
-!data/.gitkeep
+# do not upload data, but keep folders
+data/features/*
+!data/features/.gitkeep
+data/LLD-icon/*
+!data/LLD-icon/.gitkeep
+data/tsne/*
+!data/tsne/.gitkeep
+
+# ignore some plots
+src/plots/tsne/*
+!src/plots/tsne/.gitkeep
 
 # do not upload models, but keep folders
 src/models/clustering/*
