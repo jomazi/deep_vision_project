@@ -32,7 +32,7 @@ features_path = os.path.join(cur_dir, '../data/features/resnet.npy')
 # check if features exist
 assert os.path.isfile(features_path), 'Get ResNet features first!'
 
-icon_features = np.load(features_path)
+icon_features = np.load(features_path)[:100000]
 
 print('got data \n')
 
