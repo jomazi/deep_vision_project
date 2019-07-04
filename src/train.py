@@ -1,23 +1,10 @@
-#import os
-#import random
-#import torch.nn.parallel
-#import torch.backends.cudnn as cudnn
-#import torch.optim as optim
-#import torch.utils.data
-#import torchvision.datasets as dset
-#import torchvision.transforms as transforms
-#import torchvision.utils as vutils
-#from torch.autograd import Variable
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
 
 from torch.utils.data.dataset import Dataset
-from torchvision import transforms, models
-from torch.autograd import Variable
+from torchvision import transforms
 
-import os.path
 import argparse
 import sys
 import glob
@@ -58,11 +45,8 @@ architecture_dict = {'resnet32': (EncoderRESNET32, DecoderRESNET32),
                      'dcgan32': (EncoderDCGAN32, DecoderDCGAN32),
                      'baseline': (EncoderBaseline, DecoderBaseline)}
 nc = 3 if not opt.grayscale else 1
-try:
-    architecture = architecture_dict[opt.architecture]
-except:
-    print("\nEXIT. Please specify one of the given architectures. See options using 'python train.py -h'")
-    sys.exit()
+assert opt.architecture in architecture_dict.keys(), \
+    "\nEXIT. Please specify one of the given architectures. See options using 'python train.py -h'"
 
 if opt.architecture == 'baseline':
     assert isinstance(opt.layerSizes, dict), print('layer sizes have to be in a dictionary.')
@@ -213,6 +197,7 @@ def imshow(img, color=False):
         plt.imshow(npimg[0], cmap='gray')
     plt.xticks([])
     plt.yticks([])
+
 
 def show_examples(model, _train_loader, color=True):
     x = next(iter(_train_loader))
