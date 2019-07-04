@@ -16,8 +16,8 @@ data/tsne/*
 !data/tsne/.gitkeep
 
 # ignore some plots
-src/plots/tsne/*
-!src/plots/tsne/.gitkeep
+#src/plots/tsne/*
+#!src/plots/tsne/.gitkeep
 
 # do not upload models, but keep folders
 src/models/clustering/*
