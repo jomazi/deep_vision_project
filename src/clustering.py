@@ -18,11 +18,16 @@ from tqdm import tqdm
 
 from scipy.spatial.distance import pdist, squareform
 
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 ########################################################################################################################
 # DATA
 
-features_path = '../data/features/resnet.npy'
+# determine directory of this script
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
+# path to features
+features_path = os.path.join(cur_dir, '../data/features/resnet.npy')
 
 # check if features exist
 assert os.path.isfile(features_path), 'Get ResNet features first!'
@@ -54,8 +59,8 @@ metrics = {'euclidean': squareform(pdist(icon_features_reduced), 'euclidean'),
            'cityblock': squareform(pdist(icon_features_reduced), 'cityblock'),
            'cosine': squareform(pdist(icon_features_reduced), 'cosine'),
            'correlation': squareform(pdist(icon_features_reduced), 'correlation'),
-           'Lk1/2': squareform(pdist(icon_features_reduced, lambda u, v: (((u-v)**2)**(1/2)).sum())),
-           'Lk1/3': squareform(pdist(icon_features_reduced, lambda u, v: (((u-v)**3)**(1/3)).sum()))}
+           'Lk12': squareform(pdist(icon_features_reduced, lambda u, v: (np.abs((u-v))**(1/2)).sum()**2)),
+           'Lk13': squareform(pdist(icon_features_reduced, lambda u, v: (np.abs((u-v))**(1/3)).sum()**3))}
 
 for metric, X in tqdm(metrics.items(), desc='metrics'):
     for param in tqdm(ParameterGrid(parameters), desc='t-SNE hyper-parameter search'):
@@ -75,7 +80,7 @@ for metric, X in tqdm(metrics.items(), desc='metrics'):
         plt.xticks(())
         plt.yticks(())
         plt.savefig(tsne_path_plot+'/{}_{}_{}.png'.format(metric, *param.values()))
-        plt.clf()
+        plt.close('all')
 
 print('t-SNE finished \n')
 

@@ -15,9 +15,8 @@ data/tsne/*
 !data/tsne/.gitkeep
 
 # do not upload models, but keep folders
-src/models/clustering/*
-!src/models/clustering/.gitkeep
-src/models/luca/*
+src/models/dcgan32/*
+!src/models/dcgan32/.gitkeep
 
 # Python specific
 **/__pycache__/
