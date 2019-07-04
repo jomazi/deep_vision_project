@@ -32,6 +32,12 @@ A deep learning capable logo generator.
     ```
     python ./src/download_data.py 
     ```
+    
+- Get ResNet encoded data
+
+    ```
+    python ./src/fcts/resnet_features.py
+    ```
 
 - JupyterLab
 

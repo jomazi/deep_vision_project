@@ -1,15 +1,19 @@
 import numpy as np
 import os
-from glob import glob
 import _pickle
+from glob import glob
+from torch.utils.data.dataset import Dataset
+
+########################################################################################################################
+# HELPER FUNCTION
 
 
 def load_data(dir='../../data/', split=0.7, part='train', batchsize=128, subset=False):
     """
-    :param dir: relative path to directory the data is stored
+    :param dir: relative path to directory the data is stored (relative to working directory)
     :param split: partial of training data to split data into train and test set; float
-    :param part: which part of data to retutn either train or test set; string
-    :param batchsize: length of data has to be multiple of batchsize; int
+    :param part: which part of data to return either train or test set; string
+    :param batchsize: length of data has to be multiple of batch size; int
     :param subset: only use subset of data; bool
     :return: data as numpy array, train and test set
     """
@@ -61,3 +65,31 @@ def load_data(dir='../../data/', split=0.7, part='train', batchsize=128, subset=
             mod = (len(data)-index_split) % batchsize
             index_split = index_split + mod
             return data[index_split:]
+
+########################################################################################################################
+# DATA SET
+
+
+class IconDataset(Dataset):
+    def __init__(self, part='train', transform=None, batch_size=128, sub_set=False):
+        """
+        :param part: get either train or test set; string
+        :param transform: transformations, that should be applied on dataset
+        :param batch_size: to have only batches of same size; int
+        :param sub_set: subset of data; bool
+        """
+        self.data = load_data(part=part, batchsize=batch_size, subset=sub_set)
+        self.transform = transform
+
+    def __getitem__(self, index):
+        img = self.data[index]
+        # transform image
+        if self.transform is not None:
+            img_transformed = self.transform(img)
+        else:
+            img_transformed = img.copy()
+        # return transformed image
+        return img_transformed
+
+    def __len__(self):
+        return self.data.shape[0]

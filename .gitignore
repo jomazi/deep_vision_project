@@ -14,13 +14,10 @@ data/LLD-icon/*
 data/tsne/*
 !data/tsne/.gitkeep
 
-# ignore some plots
-#src/plots/tsne/*
-#!src/plots/tsne/.gitkeep
-
 # do not upload models, but keep folders
 src/models/clustering/*
 !src/models/clustering/.gitkeep
+src/models/luca/*
 
 # Python specific
 **/__pycache__/

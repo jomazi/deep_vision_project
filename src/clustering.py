@@ -1,10 +1,9 @@
 import warnings
 import glob
+import os
 
 import numpy as np
 import matplotlib.pyplot as plt
-
-import torch
 
 from sklearn import cluster, mixture
 from sklearn.neighbors import kneighbors_graph
@@ -12,23 +11,23 @@ from sklearn.preprocessing import StandardScaler
 from itertools import cycle, islice
 
 from sklearn.decomposition import TruncatedSVD
+from sklearn.manifold import TSNE
 from sklearn.model_selection import ParameterGrid
 from scipy import sparse
 from tqdm import tqdm
 
-# GPU or CPU t-SNE implementation
-if torch.cuda.is_available():
-    from tsnecuda import TSNE
-else:
-    from sklearn.manifold import TSNE
-
+from scipy.spatial.distance import pdist, squareform
 
 
 ########################################################################################################################
 # DATA
 
 features_path = '../data/features/resnet.npy'
-icon_features = np.load(features_path)[:100000]
+
+# check if features exist
+assert os.path.isfile(features_path), 'Get ResNet features first!'
+
+icon_features = np.load(features_path)[:100]
 
 print('got data \n')
 
@@ -49,26 +48,34 @@ print('data reduced \n')
 # t-SNE
 tsne_path = '../data/tsne'
 tsne_path_plot = './plots/tsne'
-parameters = {'perplexity': [20, 35, 50], 'learning_rate': [50, 125, 200], 'init': ['random', 'pca']}
+parameters = {'perplexity': [20, 35, 50], 'learning_rate': [50, 125, 200]}
 
-for param in tqdm(ParameterGrid(parameters), desc='t-SNE hyper-parameter search'):
+metrics = {'euclidean': squareform(pdist(icon_features_reduced), 'euclidean'),
+           'cityblock': squareform(pdist(icon_features_reduced), 'cityblock'),
+           'cosine': squareform(pdist(icon_features_reduced), 'cosine'),
+           'correlation': squareform(pdist(icon_features_reduced), 'correlation'),
+           'Lk1/2': squareform(pdist(icon_features_reduced, lambda u, v: (((u-v)**2)**(1/2)).sum())),
+           'Lk1/3': squareform(pdist(icon_features_reduced, lambda u, v: (((u-v)**3)**(1/3)).sum()))}
 
-    # embedding
-    embedded_icon_features = TSNE(n_components=2, **param).fit_transform(icon_features_reduced)
+for metric, X in tqdm(metrics.items(), desc='metrics'):
+    for param in tqdm(ParameterGrid(parameters), desc='t-SNE hyper-parameter search'):
 
-    # save numpy array
-    features_embedded_path = tsne_path + '/{}_{}_{}.npy'.format(*param.values())
-    np.save(features_embedded_path, embedded_icon_features)
+        # embedding
+        embedded_icon_features = TSNE(n_components=2, metric='precomputed', **param).fit_transform(X)
 
-    # plot data
-    plt.figure(figsize=(6, 6))
-    plt.title('t-SNE parameters - \n init: {}, learning rate: {}, perplexity: {}'.format(*param.values()),
-              size=12, weight='bold')
-    plt.scatter(x=embedded_icon_features[:, 0], y=embedded_icon_features[:, 1], alpha=0.1)
-    plt.xticks(())
-    plt.yticks(())
-    plt.savefig(tsne_path_plot+'/{}_{}_{}.png'.format(*param.values()))
-    plt.clf()
+        # save numpy array
+        features_embedded_path = tsne_path + '/{}_{}_{}.npy'.format(metric, *param.values())
+        np.save(features_embedded_path, embedded_icon_features)
+
+        # plot data
+        plt.figure(figsize=(6, 6))
+        plt.title('t-SNE parameters - \n metric: {}, learning rate: {}, perplexity: {}'.format(metric, *param.values()),
+                  size=12, weight='bold')
+        plt.scatter(x=embedded_icon_features[:, 0], y=embedded_icon_features[:, 1], alpha=0.1)
+        plt.xticks(())
+        plt.yticks(())
+        plt.savefig(tsne_path_plot+'/{}_{}_{}.png'.format(metric, *param.values()))
+        plt.clf()
 
 print('t-SNE finished \n')
 
@@ -84,7 +91,7 @@ def clustering(_data, _path, _param):
     plt.tight_layout()
     plt.subplots_adjust(top=0.7)
 
-    plt.suptitle('t-SNE parameters - init: {}, learning rate: {}, perplexity: {}'.format(*_param),
+    plt.suptitle('t-SNE parameters - metric: {}, learning rate: {}, perplexity: {}'.format(*_param),
                  size=14, weight='bold')
 
     plot_num = 1
@@ -175,11 +182,11 @@ def clustering(_data, _path, _param):
 for p in tqdm(glob.glob(tsne_path + '/*.npy'), desc='data sets'):
     # get parameter previously used for t-SNE
     split = p.split('_')
-    init = split[0].split('/')[-1]
+    metric = split[0].split('/')[-1]
     learning_rate = split[1]
     perplexity = split[2][:-4]
 
-    parameters = [init, learning_rate, perplexity]
+    parameters = [metric, learning_rate, perplexity]
 
     # data
     data = np.load(p)
