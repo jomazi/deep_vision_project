@@ -47,6 +47,7 @@ architecture_dict = {'resnet32': (EncoderRESNET32, DecoderRESNET32),
 nc = 3 if not opt.grayscale else 1
 assert opt.architecture in architecture_dict.keys(), \
     "\nEXIT. Please specify one of the given architectures. See options using 'python train.py -h'"
+architecture = architecture_dict[opt.architecture]
 
 if opt.architecture == 'baseline':
     assert isinstance(opt.layerSizes, dict), print('layer sizes have to be in a dictionary.')
