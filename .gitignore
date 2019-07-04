@@ -11,7 +11,6 @@ info/
 data/features/*
 !data/features/.gitkeep
 data/LLD-icon/*
-!data/LLD-icon/.gitkeep
 data/tsne/*
 !data/tsne/.gitkeep
 

@@ -4,16 +4,25 @@ import glob
 import numpy as np
 import matplotlib.pyplot as plt
 
+import torch
+
 from sklearn import cluster, mixture
 from sklearn.neighbors import kneighbors_graph
 from sklearn.preprocessing import StandardScaler
 from itertools import cycle, islice
 
-from sklearn.manifold import TSNE
 from sklearn.decomposition import TruncatedSVD
 from sklearn.model_selection import ParameterGrid
 from scipy import sparse
 from tqdm import tqdm
+
+# GPU or CPU t-SNE implementation
+if torch.cuda.is_available():
+    from tsnecuda import TSNE
+else:
+    from sklearn.manifold import TSNE
+
+
 
 ########################################################################################################################
 # DATA
