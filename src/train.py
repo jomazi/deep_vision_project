@@ -145,10 +145,10 @@ def train(model, epochs, path, optimizer, trainloader, testloader, test_after_ep
             loss.backward()
             train_loss += loss.item()
             optimizer.step()
-            if batch_idx % int(len(train_loader) / 10) == 0:
+            if 1 == 0:  # batch_idx % int(len(train_loader) / 10) == 0:
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                     epoch, batch_idx * len(x), len(train_loader.dataset),
-                           100. * batch_idx / len(train_loader), loss.item() / len(x)))
+                    100. * batch_idx / len(train_loader), loss.item() / len(x)))
 
         print('====> Epoch: {} Average loss: {:.4f}'.format(epoch, train_loss / len(train_loader.dataset)))
 

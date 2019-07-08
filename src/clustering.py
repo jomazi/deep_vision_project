@@ -10,10 +10,9 @@ from sklearn.neighbors import kneighbors_graph
 from sklearn.preprocessing import StandardScaler
 from itertools import cycle, islice
 
-from sklearn.decomposition import TruncatedSVD
+from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from sklearn.model_selection import ParameterGrid
-from scipy import sparse
 from tqdm import tqdm
 
 from scipy.spatial.distance import pdist, squareform
@@ -41,12 +40,11 @@ print('got data \n')
 
 """
 First of all dimensionality has to be reduced to ~ 50 features and only then t-SNE can be used due to computational 
-limitations. Beforehand TruncatedSVD will be used to reduce dimensions, it can efficiently be used with sparse data as 
-well. Different hyper-parameters will be tested for t-SNE.
+limitations. Beforehand PCA will be used to reduce dimensions. Different hyper-parameters will be tested for t-SNE.
 """
 
 # reduce dimensions with TruncatedSVD
-icon_features_reduced = TruncatedSVD(n_components=50).fit_transform(sparse.csr_matrix(icon_features))
+icon_features_reduced = PCA(n_components=50).fit_transform(icon_features)
 
 print('data reduced \n')
 
