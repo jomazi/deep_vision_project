@@ -13,6 +13,8 @@ data/features/*
 data/LLD-icon/*
 data/tsne/*
 !data/tsne/.gitkeep
+data/labels/*
+!data/labels/.gitkeep
 
 # do not upload models, but keep folders
 src/models/dcgan32/*
