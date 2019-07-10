@@ -29,7 +29,7 @@ parser = argparse.ArgumentParser(description='Clustering of ResNet features')
 
 parser.add_argument('--low', action='store_false', help='Cluster low dimensional data (alternative: False '
                                                         '--> high dimensional data)? default=True')
-parser.add_argument('--categories', type=int, default=5, help='Number of clusters; default=5')
+parser.add_argument('--categories', type=int, default=5, help='Number of clusters (should not exceed 5); default=5')
 parser.add_argument('--num_images', type=int, default=10000, help='Number of images to use; default=10000')
 
 opt = parser.parse_args()
@@ -60,8 +60,8 @@ print('got data \n')
 # DIMENSIONALITY REDUCTION
 
 """
-First of all dimensionality has to be reduced to ~ 50 features and only then t-SNE can be used due to computational 
-limitations. Beforehand PCA will be used to reduce dimensions. Different hyper-parameters will be tested for t-SNE.
+If low dimensional data has to be clustered, dimensionality has to be reduced to ~ 50 features first and then t-SNE 
+is used due to computational limitations to further reduce dimensions. Beforehand, a PCA will be applied.
 """
 
 if opt.low:
@@ -103,13 +103,13 @@ if opt.low:
             plt.savefig(tsne_path_plot+'/{}_{}_{}.png'.format(metric, *param.values()))
             plt.close('all')
 
-    print('t-SNE finished \n')
+    print('dimensionality reduction finished \n')
 
 
 ########################################################################################################################
 # CLUSTERING
 
-# helper function to visualize logos of different categories
+# helper function to visualize logos of different categories/clusters
 def vis_cat(_path, images, categories, labels):
 
     """
@@ -118,10 +118,6 @@ def vis_cat(_path, images, categories, labels):
     :param categories: categories; list[int]
     :param labels: labels of passed images
     """
-
-    # clean up
-    plt.close('all')
-    plt.clf()
 
     # initialize figure
     plt.figure(figsize=(12, 8))
@@ -146,7 +142,6 @@ def vis_cat(_path, images, categories, labels):
             # add title for img in center
             if j == 0:
                 plt.title('Category: {}'.format(c+1), size=11)
-                print('ok')
 
             # plot if image available
             try:
@@ -230,24 +225,16 @@ def clustering(_data, path_image, _path_labels, _param, plot):
         'Gaussian \n Mixture': gmm
     }
 
+    # names of algorithms that are compatible to use within paths
     algo_names_compatible = ['Mini_Batch_KMeans', 'Mean_Shift', 'Spectral_Clustering', 'Ward',
                              'Agglomerative_Clustering', 'DBSCAN', 'OPTICS', 'Birch', 'Gaussian_Mixture']
 
     labels = []
 
     for name, algorithm in tqdm(clustering_algorithms.items(), desc='clustering', leave=False):
-        # catch warnings related to kneighbors_graph
-        with warnings.catch_warnings():
-            warnings.filterwarnings(
-                "ignore",
-                message="the number of connected components of the " + "connectivity matrix is [0-9]{1,2}" +
-                        " > 1. Completing it to avoid stopping the tree early.",
-                category=UserWarning)
-            warnings.filterwarnings(
-                "ignore",
-                message="Graph is not fully connected, spectral embedding" + " may not work as expected.",
-                category=UserWarning)
-            algorithm.fit(X)
+
+        # fit
+        algorithm.fit(X)
 
         # predict labels
         if hasattr(algorithm, 'labels_'):
@@ -263,7 +250,8 @@ def clustering(_data, path_image, _path_labels, _param, plot):
             plt.subplot(1, len(clustering_algorithms), plot_num)
             plt.title(name, size=11)
 
-            colors = np.array(list(islice(cycle(['red', 'blue', 'green', 'black']), int(max(y_pred) + 1))))
+            colors = np.array(list(islice(cycle(['red', 'blue', 'green', 'yellow', 'magenta', 'black']),
+                                          int(max(y_pred) + 1))))
 
             plt.scatter(X[:, 0], X[:, 1], s=10, color=colors[y_pred], alpha=0.1)
 
@@ -288,15 +276,14 @@ def clustering(_data, path_image, _path_labels, _param, plot):
     imgs = load_data()[:num_img]
 
     for i, name in enumerate(algo_names_compatible):
-        p = ppath + _path_labels.split('/')[-1][:-10]
-        p = p + '{}_categories.png'.format(name)
+        _p = ppath + _path_labels.split('/')[-1][:-10]
+        _p = _p + '{}_categories.png'.format(name)
 
         # actual visualization
-        vis_cat(p, imgs, np.unique(labels[i]), labels[i])
+        vis_cat(_p, imgs, np.unique(labels[i]), labels[i])
 
 
 if opt.low:
-
     # clustering for every embedded data set
     for p in tqdm(glob.glob(tsne_path + '/*.npy'), desc='data sets'):
         # get parameter previously used for t-SNE
