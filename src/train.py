@@ -50,7 +50,7 @@ assert opt.architecture in architecture_dict.keys(), \
 architecture = architecture_dict[opt.architecture]
 
 if opt.architecture == 'baseline':
-    assert isinstance(opt.layerSizes, dict), print('layer sizes have to be in a dictionary.')
+    assert isinstance(opt.layerSizes, dict), 'layer sizes have to be in a dictionary.'
     layer_sizes = {'encoder': [nc*img_size**2, *opt.layerSizes['encoder']],
                    'decoder': [*opt.layerSizes['decoder'], nc*img_size**2]}
     print(layer_sizes)
