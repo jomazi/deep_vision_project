@@ -19,6 +19,8 @@ data/labels/*
 # do not upload models, but keep folders
 src/models/dcgan32/*
 !src/models/dcgan32/.gitkeep
+src/models/resnet32/*
+!src/models/resnet32/.gitkeep
 
 # Python specific
 **/__pycache__/
