@@ -274,7 +274,7 @@ if __name__ == "__main__":
                   'encoder_activation': nn.LeakyReLU(), 'decoder_activation': nn.ReLU()}
         vae = VAE(**kwargs)
     vae.to(device)
-    optimizer = optim.Adam(vae.parameters(), lr=opt.lr)
+    optimizer = optim.Adam(vae.parameters(), lr=opt.lr, weight_decay=opt.lr/10)
 
     if opt.outpath[-1] == '/':
         filepath = opt.outpath+'vae_'+opt.architecture+'-'

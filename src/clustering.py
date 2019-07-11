@@ -29,6 +29,8 @@ parser = argparse.ArgumentParser(description='Clustering of ResNet features')
 
 parser.add_argument('--low', action='store_false', help='Cluster low dimensional data (alternative: False '
                                                         '--> high dimensional data)? default=True')
+parser.add_argument('--vae', action='store_true', help='Cluster latent space of trained VAE (only possible if'
+                                                       'low=True)? default=False')
 parser.add_argument('--categories', type=int, default=5, help='Number of clusters (should not exceed 5); default=5')
 parser.add_argument('--num_images', type=int, default=10000, help='Number of images to use; default=10000')
 
@@ -39,6 +41,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 # path to features
 features_path = os.path.join(cur_dir, '../data/features/resnet.npy')
+features_path_vae = os.path.join(cur_dir, '../data/features/dcgan32.npy')
 
 # path to save labels
 labels_path = os.path.join(cur_dir, '../data/labels/')
@@ -51,8 +54,10 @@ ppath = os.path.join(cur_dir, './plots/categories/')
 
 # check if features exist
 assert os.path.isfile(features_path), 'Get ResNet features first!'
+assert os.path.isfile(features_path_vae), 'Get VAE features first!'
 
 icon_features = np.load(features_path)[:opt.num_images]
+icon_features_vae = np.load(features_path_vae)[:opt.num_images]
 
 print('got data \n')
 
@@ -65,15 +70,22 @@ is used due to computational limitations to further reduce dimensions. Beforehan
 """
 
 if opt.low:
-
-    # reduce dimensions with TruncatedSVD
-    icon_features_reduced = PCA(n_components=50).fit_transform(icon_features)
+    # load VAE features if desired
+    if opt.vae:
+        icon_features_reduced = icon_features_vae
+    else:
+        # reduce dimensions with TruncatedSVD
+        icon_features_reduced = PCA(n_components=50).fit_transform(icon_features)
 
     print('data reduced \n')
 
     # t-SNE
-    tsne_path = '../data/tsne'
-    tsne_path_plot = './plots/tsne'
+    if opt.vae:
+        tsne_path = '../data/tsne/vae'
+        tsne_path_plot = './plots/tsne/vae'
+    else:
+        tsne_path = '../data/tsne'
+        tsne_path_plot = './plots/tsne'
     parameters = {'perplexity': [20, 35, 50], 'learning_rate': [50, 125, 200]}
 
     metrics = {'euclidean': squareform(pdist(icon_features_reduced), 'euclidean'),
