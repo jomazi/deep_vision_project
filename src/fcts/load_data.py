@@ -8,7 +8,7 @@ from torch.utils.data.dataset import Dataset
 # HELPER FUNCTION
 
 
-def load_data(dir='../../data/', split=0.7, part='train', batchsize=128, subset=False):
+def load_data(dir='../../data/', split=0.7, part='train', batchsize=128, subset=False, sharp=False):
     """
     :param dir: relative path to directory the data is stored (relative to working directory)
     :param split: partial of training data to split data into train and test set; float
@@ -43,17 +43,20 @@ def load_data(dir='../../data/', split=0.7, part='train', batchsize=128, subset=
             with open(file, 'rb') as f:
                 data_add = _pickle.load(f, encoding='latin1')
             data = np.concatenate((data, data_add))
-            
+        # sharp?
+        if sharp:
+            idx = _pickle.load(open('src/LLD-icon-sharp_indices.pkl', 'rb'), encoding='latin1')
+            data = data[idx]
         # shuffle
         np.random.shuffle(data)
 
         # use subset if requested
         if subset:
             data = data[:(batchsize*100)]
-        
+
         # split data in train and test
         index_split = int(len(data) * split)
-        
+
         # return requested part
         if part == 'train':
             # make last batch have same batch size
@@ -71,14 +74,14 @@ def load_data(dir='../../data/', split=0.7, part='train', batchsize=128, subset=
 
 
 class IconDataset(Dataset):
-    def __init__(self, part='train', transform=None, batch_size=128, sub_set=False):
+    def __init__(self, part='train', transform=None, batch_size=128, sub_set=False, sharp=False):
         """
         :param part: get either train or test set; string
         :param transform: transformations, that should be applied on dataset
         :param batch_size: to have only batches of same size; int
         :param sub_set: subset of data; bool
         """
-        self.data = load_data(part=part, batchsize=batch_size, subset=sub_set)
+        self.data = load_data(part=part, batchsize=batch_size, subset=sub_set, sharp=sharp)
         self.transform = transform
 
     def __getitem__(self, index):

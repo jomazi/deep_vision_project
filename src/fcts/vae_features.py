@@ -89,8 +89,6 @@ def get_features(part='train'):
         features = np.squeeze(features.detach().cpu().numpy())
         icon_features.append(features)
 
-    print(np.shape(icon_features))
-
     return icon_features
 
 ########################################################################################################################

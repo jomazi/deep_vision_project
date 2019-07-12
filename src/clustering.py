@@ -43,11 +43,17 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 features_path = os.path.join(cur_dir, '../data/features/resnet.npy')
 features_path_vae = os.path.join(cur_dir, '../data/features/dcgan32.npy')
 
-# path to save labels
-labels_path = os.path.join(cur_dir, '../data/labels/')
-
-# path to save plots
-ppath = os.path.join(cur_dir, './plots/categories/')
+# further paths
+if opt.vae:
+    # path to save plots
+    ppath = os.path.join(cur_dir, './plots/categories/vae/')
+    # path to save labels
+    labels_path = os.path.join(cur_dir, '../data/labels/vae/')
+else:
+    # path to save plots
+    ppath = os.path.join(cur_dir, './plots/categories/')
+    # path to save labels
+    labels_path = os.path.join(cur_dir, '../data/labels/')
 
 ########################################################################################################################
 # DATA

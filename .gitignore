@@ -11,16 +11,18 @@ info/
 data/features/*
 !data/features/.gitkeep
 data/LLD-icon/*
-data/tsne/*
-!data/tsne/.gitkeep
-data/labels/*
-!data/labels/.gitkeep
+data/tsne/vae/*
+!data/tsne/vae/.gitkeep
+data/labels/vae/*
+!data/labels/vae/.gitkeep
 
 # do not upload models, but keep folders
 src/models/dcgan32/*
 !src/models/dcgan32/.gitkeep
 src/models/resnet32/*
 !src/models/resnet32/.gitkeep
+src/models/wgan/*
+!src/models/wgan/.gitkeep
 
 # Python specific
 **/__pycache__/
