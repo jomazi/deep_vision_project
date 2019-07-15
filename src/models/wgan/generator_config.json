@@ -1,0 +1,1 @@
+{"imageSize": 32, "nz": 100, "nc": 3, "ngf": 64, "ngpu": 0, "n_extra_layers": 0, "noBN": false, "mlp_G": false}
