@@ -33,10 +33,11 @@ A deep learning capable logo generator.
     python ./src/download_data.py 
     ```
     
-- Get ResNet encoded data
+- Get ResNet and VAE encoded data
 
     ```
     python ./src/fcts/resnet_features.py
+    python ./src/fcts/vae_features.py
     ```
 
 - JupyterLab
